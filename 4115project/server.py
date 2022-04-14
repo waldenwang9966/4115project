@@ -110,6 +110,7 @@ def teardown_request(exception):
 #
 @app.route("/")
 def index():
+    
     """
     request is a special object that Flask provides to access web request information:
 
@@ -122,14 +123,15 @@ def index():
 
     # DEBUG: this is debugging code to see what request looks like
     print(request.args)
-
+    return render_template('index.html')
+'''
     #
     # example of a database query
     #
-    cursor = g.conn.execute("SELECT name FROM test")
+    cursor = g.conn.execute("SELECT last_name FROM Applicant")
     names = []
     for result in cursor:
-        names.append(result["name"])  # can also be accessed using result[0]
+        names.append(result["last_name"])  # can also be accessed using result[0]
     cursor.close()
 
     #
@@ -166,7 +168,7 @@ def index():
     #
     return render_template("index.html", **context)
 
-
+'''
 #
 # This is an example of a different path.  You can see it at
 #
