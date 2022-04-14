@@ -110,7 +110,7 @@ def teardown_request(exception):
 #
 @app.route("/")
 def index():
-    
+
     """
     request is a special object that Flask provides to access web request information:
 
@@ -123,8 +123,10 @@ def index():
 
     # DEBUG: this is debugging code to see what request looks like
     print(request.args)
-    return render_template('index.html')
-'''
+    return render_template("index.html")
+
+
+"""
     #
     # example of a database query
     #
@@ -168,7 +170,7 @@ def index():
     #
     return render_template("index.html", **context)
 
-'''
+"""
 #
 # This is an example of a different path.  You can see it at
 #
@@ -177,9 +179,19 @@ def index():
 # notice that the functio name is another() rather than index()
 # the functions for each app.route needs to have different names
 #
-@app.route("/another")
-def another():
-    return render_template("anotherfile.html")
+@app.route("/company")
+def company():
+    return render_template("company.html")
+
+
+@app.route("/applicant")
+def applicant():
+    return render_template("applicant.html")
+
+
+@app.route("/recommender")
+def recommender():
+    return render_template("recommender.html")
 
 
 # Example of adding new data to the database
@@ -189,6 +201,26 @@ def add():
     print(name)
     cmd = "INSERT INTO test(name) VALUES (:name1), (:name2)"
     g.conn.execute(text(cmd), name1=name, name2=name)
+    return redirect("/")
+
+
+@app.route("/recommender_add", methods=["POST"])
+def add():
+    last_name = request.form["last_name"]
+    first_name = request.form["first_name"]
+    date_of_birth = request.form["date_of_birth"]
+    recommendatee_relationship = request.form["recommendatee_relationship"]
+    cmd = "INSERT INTO Recommender(last_name,first_name,date_of_birth,recommendatee_relationship) VALUES (:last_name), (:first_name), (:date_of_birth), (:recommendatee_relationship)"
+    g.conn.execute(
+        text(cmd),
+        last_name=last_name,
+        first_name=first_name,
+        date_of_birth=date_of_birth,
+        recommendatee_relationship=recommendatee_relationship,
+    )
+    
+    essay = request.form["essay"]
+    
     return redirect("/")
 
 
