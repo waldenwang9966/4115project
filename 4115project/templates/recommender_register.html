@@ -8,34 +8,19 @@
 
   <body>
     <h1>Welcome to Our Job Application Site!</h1>
-    <div>{{data}}</div>
-
-    <div>
-      {% for n in data %}
-      <div>{{n}}</div>
-      {% endfor %}
-    </div>
 
     <p><a href="/">Back to Home Page</a></p>
 
-    <form method="POST" action="/recommender_add"> 
+    <form method="POST" action="/recommender_add">
       <label for="last_name">Last Name</label>
-      <input type="text" name="last_name" id="last_name"><br>
+      <input type="text" name="last_name" id="last_name" /><br />
 
       <label for="first_name">First Name</label>
-      <input type="text" name="first_name" id="first_name"><br>
-
-      <label for="first_name">Recommendee First Name</label>
-      <input type="text" name="first_name"><br>
-
+      <input type="text" name="first_name" id="first_name" /><br />
 
       <label for="birth">Date of Birth</label>
-      <input type="date" name="last_name" id="birth"><br>
-
-
-      <label for="relationship">Your relationship with the recommender</label>
-      <input type="text" name="recommendatee_relationship" id="relationship"><br> 
-      <input type="submit" name="submit" value="登录"> 
-      </form>
+      <input type="date" name="date_of_birth" id="birth" /><br />
+      <input type="submit" value="Submit" />
+    </form>
   </body>
 </html>
