@@ -170,8 +170,8 @@ def index():
 def company():
     return render_template("company_register.html")
 
-@app.route("/recommender_add", methods=["POST"])
-def add():
+@app.route("/company_add", methods=["POST"])
+def company_add():
     company_name = request.form["company_name"]
     companize_size = request.form["company_size"]
     cmd = "INSERT INTO Company(company_name,company_size) VALUES (:company_name), (:company_size)"
@@ -203,12 +203,10 @@ def recommender_search():
         for result in cursor:
             records.append(result)
         cursor.close()
-
         context = dict(data=records)
-
         return render_template("recommender_search.html", **context)
     else:
-        return redirect("/recommender_register")
+        return render_template("recommender_not_login.html")
         
 
 # Example of adding new data to the database
@@ -262,7 +260,7 @@ def recommender_search_add():
 @app.route("/recommender_logoff")
 def logout():
     session.pop("rid", None)
-    return redirect("/")
+    return redirect("/recommender_register")
 
 
 @app.route("/login")
