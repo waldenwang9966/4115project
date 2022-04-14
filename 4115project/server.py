@@ -179,19 +179,32 @@ def index():
 # notice that the functio name is another() rather than index()
 # the functions for each app.route needs to have different names
 #
-@app.route("/company")
+@app.route("/company_register")
 def company():
-    return render_template("company.html")
+    return render_template("company_register.html")
+
+@app.route("/recommender_add", methods=["POST"])
+def add():
+    company_name = request.form["company_name"]
+    companize_size = request.form["company_size"]
+    cmd = "INSERT INTO Company(company_name,company_size) VALUES (:company_name), (:company_size)"
+    g.conn.execute(
+        text(cmd),
+        company_name=company_name,
+        company_size=company_size
+    )
+    
+    return redirect("/")
 
 
-@app.route("/applicant")
+@app.route("/applicant_register")
 def applicant():
-    return render_template("applicant.html")
+    return render_template("applicant_register.html")
 
 
-@app.route("/recommender")
+@app.route("/recommender_register")
 def recommender():
-    return render_template("recommender.html")
+    return render_template("recommender_register.html")
 
 
 # Example of adding new data to the database
