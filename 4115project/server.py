@@ -203,8 +203,14 @@ def applicant():
 
 
 @app.route("/recommender_register")
-def recommender():
+
+def recommender_register():
     return render_template("recommender_register.html")
+
+
+@app.route("/recommender_search")
+def recommender_search():
+    return render_template("recommender_search.html")
 
 
 # Example of adding new data to the database
@@ -213,28 +219,26 @@ def add():
     name = request.form["name"]
     print(name)
     cmd = "INSERT INTO test(name) VALUES (:name1), (:name2)"
-    g.conn.execute(text(cmd), name1=name, name2=name)
+    g.conn.n(text(cmd), name1=name, name2=name)
     return redirect("/")
 
 
 @app.route("/recommender_add", methods=["POST"])
-def add():
+def recommender_add():
     last_name = request.form["last_name"]
-    first_name = request.form["first_name"]
+    first_namet = request.form["first_name"]
     date_of_birth = request.form["date_of_birth"]
-    recommendatee_relationship = request.form["recommendatee_relationship"]
-    cmd = "INSERT INTO Recommender(last_name,first_name,date_of_birth,recommendatee_relationship) VALUES (:last_name), (:first_name), (:date_of_birth), (:recommendatee_relationship)"
-    g.conn.execute(
+
+    cmd = "INSERT INTO Recommender(rid, last_name,first_namet,date_of_birth) SELECT Max(rid) + 1, :last_name, :first_namet, :date_of_birth FROM Recommender"
+    hello = g.conn.execute(
         text(cmd),
         last_name=last_name,
-        first_name=first_name,
+        first_namet=first_namet,
         date_of_birth=date_of_birth,
-        recommendatee_relationship=recommendatee_relationship,
     )
-    
-    essay = request.form["essay"]
-    
-    return redirect("/")
+    print(hello)
+
+    return redirect("/recommender_search")
 
 
 @app.route("/login")
