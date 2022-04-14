@@ -18,11 +18,11 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask, session, url_for, escape,request, render_template, g, redirect, Response
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 app = Flask(__name__, template_folder=tmpl_dir)
-
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # XXX: The Database URI should be in the format of:
 #
@@ -49,19 +49,6 @@ DATABASEURI = (
 # This line creates a database engine that knows how to connect to the URI above
 #
 engine = create_engine(DATABASEURI)
-
-
-# Here we create a test table and insert some values in it
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute(
-    """CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);"""
-)
-engine.execute(
-    """INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');"""
-)
 
 
 @app.before_request
@@ -196,8 +183,19 @@ def recommender_register():
 
 @app.route("/recommender_search")
 def recommender_search():
-    return render_template("recommender_search.html")
+    if "rid" in session:
+        cursor = g.conn.execute("SELECT * FROM Applicant")
+        records = []
+        for result in cursor:
+            records.append(result)
+        cursor.close()
 
+        context = dict(data=records)
+
+        return render_template("recommender_search.html", **context)
+    else:
+        return redirect("/recommender_register")
+        
 
 # Example of adding new data to the database
 @app.route("/add", methods=["POST"])
@@ -216,15 +214,41 @@ def recommender_add():
     date_of_birth = request.form["date_of_birth"]
 
     cmd = "INSERT INTO Recommender(rid, last_name,first_namet,date_of_birth) SELECT Max(rid) + 1, :last_name, :first_namet, :date_of_birth FROM Recommender"
-    hello = g.conn.execute(
+    g.conn.execute(
         text(cmd),
         last_name=last_name,
         first_namet=first_namet,
         date_of_birth=date_of_birth,
     )
-    print(hello)
-
+    
+    cursor = g.conn.execute("SELECT Max(rid) FROM Recommender")
+    for r in cursor:
+        rid = r[0]
+    session["rid"] = rid
     return redirect("/recommender_search")
+'''
+cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
+g.conn.execute(text(cmd), name1 = name, name2 = name);
+'''
+@app.route("/recommender_search_add", methods=["POST"])
+def recommender_search_add():
+    if "rid" in session:
+        rid = session["rid"]
+        aid = request.form["aid"]
+        recommendatee_relationship = request.form["recommendatee_relationship"]
+        posted_day = request.form["posted_day"]
+        essay = request.form["essay"]
+
+        cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
+        g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
+        return redirect("/recommender_logoff")
+    else:
+        return redirect("/")
+
+@app.route("/recommender_logoff")
+def logout():
+    session.pop("rid", None)
+    return redirect("/")
 
 
 @app.route("/login")

@@ -8,20 +8,31 @@
 
   <body>
     <h1>Recommend Page</h1>
-    <div>{{data}}</div>
-
-    <div>
-      {% for n in data %}
-      <div>{{n}}</div>
-      {% endfor %}
-    </div>
-
     <p><a href="/">Back to Home Page</a></p>
 
-    <form method="POST" action="/recommender_search">
+    <div>
+      Please search for the person you are recommending:
+        <datalist id="suggestions">
+            {% for n in data %}
+                <option>id: {{n[0]}} Name: {{n[2]+" " + n[1]}} Email: {{n[3]}}</option>
+            {% endfor %}
+        </datalist>
+        <input  autoComplete="on" list="suggestions"/> 
+    </div>
 
-      <label for="essay">Recommend Text</label>
-      <textarea name="essay" id="essay"></textarea>
+    <form method="POST" action="/recommender_search_add">
+      <label for="aid">The recommendee's id you got from above: </label> 
+      <input type= "number" name="aid" id="aid"></input> <br />
+
+      <label for="relationship">Your relationship with the recommendee: </label>
+      <input type= "text" name="recommendatee_relationship" id="relationship"></input> <br />
+
+      <label for="day">Date of Submission: </label>
+      <input type= "date" name="posted_day" id="day"></input> <br />
+
+
+      <label for="essay">Please copy and paste your recommend text below. </label> <br/>
+      <textarea name="essay" id="essay" rows="20" cols="100"></textarea> <br />
       <input type="submit" value="Submit"  /><br />
     </form>
   </body>
