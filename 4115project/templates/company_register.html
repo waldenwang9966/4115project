@@ -7,14 +7,25 @@
   </style>
 
   <body>
+    <h1>Welcome to Our Job Application Site!</h1>
+    <div>{{data}}</div>
 
-    <p><a href="/another">Go to the other page hello </a></p>
+    <div>
+      {% for n in data %}
+      <div>{{n}}</div>
+      {% endfor %}
+    </div>
 
-    <form method="POST" action="/add">
-      <p>
-        Job Title: <input type="text" name="name" />
-        <input type="submit" value="Add" />
-      </p>
-    </form>
+    <p><a href="/">Back to Home Page</a></p>
+
+    <form method="POST" action="/company_add"> 
+      <label for="company_name">Company Name</label>
+      <input type="text" name="company_name" id="company_name"><br>
+
+      <label for="company_size">Company Size</label>
+      <input type="int" name="company_size" id="company_size"><br>
+      
+      <input type="submit" name="submit" value="登录"> 
+      </form>
   </body>
 </html>
