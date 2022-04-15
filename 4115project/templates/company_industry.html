@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Company Employee Pair</h1>
+    <p><a href="/">Back to Home Page</a></p>
+
+    <div>
+      <form method="POST" action="/company_decide">
+        <label for="cid">What is your company id (CID) you saved? </label>
+        <input type="number" name="cid" id="cid" /><br />
+
+        <label for="industry">Which industry you are looking for? You can use the search bar below to find available options.</label>
+
+        <p>Search bar: </p><datalist id="industry">
+          {% for n in data1 %}
+          <option>{{n[0]}}</option>
+          {% endfor %}
+        </datalist>
+        <input autocomplete="on" list="industry" />
+        <input type= "text" name="industry_ans" id="industry_ans"></input> <br />
+
+        <label for="job_type">Which job type you are looking for? You can use the search bar below to find available options.</label>
+
+        <p>Search bar: </p><datalist id="job_type">
+          {% for n in data2 %}
+          <option>{{n[0]}}</option>
+          {% endfor %}
+        </datalist>
+        <input autocomplete="on" list="job_type" />
+        <input type= "text" name="job_type_ans" id="job_type_ans"></input> <br />
+
+        <input type="submit" value="See pending matches" />
+      </form>
+  </body>
+</html>

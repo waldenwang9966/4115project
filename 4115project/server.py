@@ -1,7 +1,8 @@
 import os
+from django.shortcuts import render
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask url_for, escape,request, render_template, g, redirect, Response
+from flask import Flask, url_for, escape,request, render_template, g, redirect, Response
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -65,13 +66,34 @@ def company_add():
         company_size=company_size
     )
     
-    cursor = g.conn.execute(f"SELECT cid FROM Company WHERE company_name = {company_name}")
+    cmd2 = f"SELECT MAX(cid) FROM Company WHERE company_name = \'{company_name}\'"
+    cursor = g.conn.execute(text(cmd2))
     for r in cursor:
         cid = r[0]
-    print("right here...")
-    print(cid)
     
-    return redirect("/company_search")
+    return render_template("cid.html", value = cid)
+
+@app.route("/company_industry")
+def company_industry():
+    cursor = g.conn.execute("SELECT distinct industry from Application_submits")
+    
+    industries = []
+    for result in cursor:
+        industries.append(result)
+    cursor.close()
+    
+    cursor = g.conn.execute("SELECT distinct job_type from Application_submits")
+    
+    job_types = []
+    for result in cursor:
+        job_types.append(result)
+    cursor.close()
+    
+    context1 = dict(data1=industries)
+    context2 = dict(data2=job_types)
+    
+    return render_template("company_industry.html", **context1, **context2)
+    
 
 @app.route("/company_search")
 def company_search():
@@ -93,18 +115,82 @@ def company_search():
     return render_template("company_search.html", **context1, **context2)
     
 # TO DO
-@app.route("/company_search_add", methods=["POST"])
-def company_search_add():
-    cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
-    g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
-    return redirect("/company_search_add")
+@app.route("/company_decide", methods=["POST"])
+def company_decide():
+    cid = request.form["cid"]
+    print(cid)
+    industry = request.form["industry_ans"]
+    print(industry)
+    job_type = request.form["job_type_ans"]
+    print(job_type)
+    cursor = g.conn.execute(f"SELECT appid FROM Application_submits AppS WHERE industry = \'{industry}\' AND job_type = \'{job_type}\' EXCEPT SELECT appid FROM reviews WHERE cid = \'{cid}\'")
+    appid_s = []
+    for result in cursor:
+        appid_s.append(result)
+    cursor.close()
+    if len(appid_s) == 0:
+        return render_template("company_industry_empty.html")
+    cur_appid = appid_s[0][0]
+    
+    
+    cursor = g.conn.execute(f"WITH edu(appid, degree, college_name, graduation, gpa) AS (SELECT appid, degree_type, name, graduation, gpa FROM Applicant NATURAL JOIN Application_Submits NATURAL JOIN studied_at NATURAL JOIN Educational_Institution),rec (appid, relationship, rfirst, rlast, essay) AS (SELECT recommends.appid, recommends.recommendatee_relationship, Recommender.first_namet, Recommender.last_name, essay FROM recommends NATURAL JOIN Recommender),work (appid, position, tenure, job_description, company_name) AS (SELECT appid, position_title, tenure, job_description, company_name FROM worked_at NATURAL JOIN Company ORDER BY tenure DESC) SELECT * FROM Applicant NATURAL JOIN Application_submits NATURAL JOIN edu NATURAL JOIN rec NATURAL JOIN work WHERE appid = \'{cur_appid}\' LIMIT 1")
+    
+    for record in cursor:
+        return_record = record
+    
+    return render_template("company_decide.html", value = return_record)
 
-
+@app.route("/decision_update", methods=["POST"])
+def decision_update():
+    cid = request.form['cid']
+    print(cid)
+    appid = request.form["appid"]
+    print(appid)
+    aid = request.form["aid"]
+    print(aid)
+    decision = request.form["decision"]
+    if decision == "yes":
+        interested = True
+    else:
+        interested = False
+    print(interested)
+    
+    cmd = f"INSERT INTO reviews VALUES ({cid},{aid}, {appid}, {interested})"
+    g.conn.execute(text(cmd))
+    
+    return render_template("company_industry.html")
 
 @app.route("/applicant_register")
 def applicant():
     return render_template("applicant_register.html")
 
+@app.route("/applicant_add", methods=["POST"])
+def applicant_add():
+    last_name = request.form["last_name"]
+    first_name = request.form["first_name"]
+    email = request.form["email"]
+    phone_number = request.form["phonenumber"]
+    date_of_birth = request.form["dateofbirth"]
+
+    cmd = f"INSERT INTO Applicant(last_name,first_name,email, phone_number, date_of_birth) VALUES (\'{last_name}\',\'{first_name}\', \'{email}\', \'{phone_number}\', \'{date_of_birth}\')"
+    
+    
+    g.conn.execute(
+        text(cmd),
+        last_name=last_name,
+        first_name=first_name,
+        email = email,
+        phone_number = phone_number,
+        date_of_birth=date_of_birth
+    )
+    
+    cmd2 = f"SELECT MAX(aid) FROM Applicant WHERE email = \'{email}\'"
+    cursor = g.conn.execute(text(cmd2))
+    for r in cursor:
+        aid = r[0]
+    
+    return render_template("aid.html", value = aid)
+    
 
 # Recommender related pages
 
@@ -133,6 +219,27 @@ def recommender_add():
     
     return render_template("rid.html", value = rid)
 
+@app.route("/applicant_submit")
+def applicant_submit():
+    cursor = g.conn.execute("SELECT distinct industry from Application_submits")
+    
+    industries = []
+    for result in cursor:
+        industries.append(result)
+    cursor.close()
+    
+    cursor = g.conn.execute("SELECT distinct job_type from Application_submits")
+    
+    job_types = []
+    for result in cursor:
+        job_types.append(result)
+    cursor.close()
+    
+    context1 = dict(data1=industries)
+    context2 = dict(data2=job_types)
+    
+    return render_template("company_industry.html", **context1, **context2)
+    
 
 @app.route("/recommender_search")
 def recommender_search():

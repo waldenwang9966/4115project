@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form method="POST" action="/decision_update">
+      <h1>{{value[3]}} {{value[2]}}</h1>
+
+      <h2>Identifying Information</h2>
+      <p>Applicant ID: {{value[1]}}</p>
+      <p>Application ID: {{value[0]}}</p>
+      <p>Email: {{value[4]}}</p>
+      <p>Phone: {{value[5]}}</p>
+
+      <h2>Desired Job</h2>
+      <p>Industry: {{value[7]}}</p>
+      <p>Job Type: {{value[8]}}</p>
+      <p>Desired Rate {{value[10]}}</p>
+      <p>Compensation Type {{value[9]}}</p>
+
+      <h2>Highest Level of Education</h2>
+      <p>
+        {{value[12]}} from {{value[13]}}in {{value[14]}} with a {{value[15]}}
+        GPA.
+      </p>
+
+      <h2>Recommendation</h2>
+      <p>Relationship: {{value[16]}}</p>
+      <p>Name: {{value[17]}} {{value[18]}}</p>
+      <p>Essay: {{value[19]}}</p>
+
+      <h2>Significant Work Experience (Longest Tenure)</h2>
+      <p>{{value[20]}} at {{value[23]}} for {{value[21]}} years.</p>
+      <p>Job description: {{value[22]}}</p>
+      <h2>Render Decision:</h2>
+      <p>Your company ID from registration: </p>
+      <input type= "number" name="cid" id="cid"></input>
+      <p>The applicant ID found above: </p>
+      <input type= "number" name="aid" id="aid" value={{value[1]}}></input>
+      <p>The application ID found above: </p>
+      <input type= "number" name="appid" id="appid" value={{value[0]}}></input>
+      <p>Are you interested in hiring this applicant?</p>
+      <select name="decision" id="decision">
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="POST" action="/applicant_add">
+        <label for="rid">Please enter the aid you saved when registering your account</label> 
+        <input type= "number" name="aid" id="aid"></input> <br />
+  
+        <label for="aid">The recommendee's id (AID) you got from above: </label> 
+        <input type= "number" name="aid" id="aid"></input> <br />
+  
+        <label for="job_type">Job Type you are looking for </label> 
+        <input type= "number" name="appid" id="appid"></input> <br />
+  
+        <label for="relationship">Your relationship with the recommendee: </label>
+        <input type= "text" name="recommendatee_relationship" id="relationship"></input> <br />
+  
+        <label for="day">Current Date: </label>
+        <input type= "date" name="posted_day" id="day"></input> <br />
+  
+  
+        <label for="essay">Please copy and paste your recommend text below. </label> <br/>
+        <textarea name="essay" id="essay" rows="20" cols="100"></textarea> <br />
+        <input type="submit" value="Submit"  /><br />
+      </form>
+    
+</body>
+</html>

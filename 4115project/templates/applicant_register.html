@@ -7,22 +7,29 @@
   </style>
 
   <body>
-    <h1>Applicant Register</h1>
-    <div>{{data}}</div>
+    <h1>Please fill in your information</h1>
 
-    <div>
-      {% for n in data %}
-      <div>{{n}}</div>
-      {% endfor %}
-    </div>
+    <p><a href="/">Back to Home Page</a></p>
 
-    <p><a href="/another">Go to the other page</a></p>
+    <form method="POST" action="/applicant_add">
+      <label for="last_name">Last Name</label>
+      <input type="text" name="last_name" id="last_name" /><br />
 
-    <form method="POST" action="/add">
-      <p>
-        Name of new computer scientist: <input type="text" name="name" />
-        <input type="submit" value="Add" />
-      </p>
+      <label for="first_name">First Name</label>
+      <input type="text" name="first_name" id="first_name" /><br />
+
+      <label for="email">E-mail</label>
+      <input type="email" name="email" id="email" /><br />
+
+
+      <label for="phonenumber">Phone Number</label>
+      <input type="text" name="phonenumber" id="phonenumber" /><br />
+
+      <label for="dateofbirth">Date of Birth</label>
+      <input type="date" name="dateofbirth" id="dateofbirth" /><br />
+
+
+      <input type="submit" value="Submit" />
     </form>
   </body>
 </html>
