@@ -11,10 +11,10 @@
     <p><a href="/">Back to Home Page</a></p>
 
     <div>
-      Please search for the person you are recommending:
+      Please search for the application you are recommending:
         <datalist id="suggestions">
             {% for n in data %}
-                <option>id: {{n[0]}} Name: {{n[2]+" " + n[1]}} Email: {{n[3]}}</option>
+                <option>{{n}}</option>
             {% endfor %}
         </datalist>
         <input  autoComplete="on" list="suggestions"/> 

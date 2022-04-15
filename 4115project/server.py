@@ -58,19 +58,19 @@ def company_add():
     company_size = request.form["company_size"]
     
     cmd = "INSERT INTO Company(company_name,company_size) VALUES (:company_name, :company_size)"
+    
     g.conn.execute(
         text(cmd),
         company_name=company_name,
         company_size=company_size
     )
-    '''
+    
     cursor = g.conn.execute(f"SELECT cid FROM Company WHERE company_name = {company_name}")
     for r in cursor:
         cid = r[0]
     print("right here...")
     print(cid)
-    session["cid"] = cid
-    '''
+    
     return redirect("/company_search")
 
 @app.route("/company_search")
@@ -127,7 +127,8 @@ def recommender_add():
     first_namet = request.form["first_name"]
     date_of_birth = request.form["date_of_birth"]
 
-    cmd = "INSERT INTO Recommender(rid, last_name,first_namet,date_of_birth) SELECT Max(rid) + 1, :last_name, :first_namet, :date_of_birth FROM Recommender"
+    cmd = "INSERT INTO Recommender(rid, last_name,first_namet,date_of_birth) SELECT COALESCE(MAX(rid) + 1,0), :last_name, :first_namet, :date_of_birth FROM Recommender"
+    
     g.conn.execute(
         text(cmd),
         last_name=last_name,
@@ -138,42 +139,30 @@ def recommender_add():
     cursor = g.conn.execute("SELECT Max(rid) FROM Recommender")
     for r in cursor:
         rid = r[0]
-    session["rid"] = rid
-    return redirect("/recommender_search")
+    
+    return render_template("rid.html", value = rid)
 
 
 @app.route("/recommender_search")
 def recommender_search():
-    if "rid" in session:
-        cursor = g.conn.execute("SELECT * FROM Applicant")
-        records = []
-        for result in cursor:
-            records.append(result)
-        cursor.close()
-        context = dict(data=records)
-        return render_template("recommender_search.html", **context)
-    else:
-        return render_template("recommender_not_login.html")
+    cursor = g.conn.execute("SELECT * FROM Applicant App INNER JOIN Application_submits AppS ON App.aid = AppS.aid")
+    records = []
+    for result in cursor:
+        records.append(result)
+    cursor.close()
+    context = dict(data=records)
+    return render_template("recommender_search.html", **context)
 
 @app.route("/recommender_search_add", methods=["POST"])
 def recommender_search_add():
-    if "rid" in session:
-        rid = session["rid"]
-        aid = request.form["aid"]
-        recommendatee_relationship = request.form["recommendatee_relationship"]
-        posted_day = request.form["posted_day"]
-        essay = request.form["essay"]
+    aid = request.form["aid"]
+    recommendatee_relationship = request.form["recommendatee_relationship"]
+    posted_day = request.form["posted_day"]
+    essay = request.form["essay"]
+    cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
+    g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
+    return redirect("/")
 
-        cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
-        g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
-        return redirect("/recommender_logoff")
-    else:
-        return redirect("/")
-
-@app.route("/recommender_logoff")
-def recommender_logout():
-    session.pop("rid", None)
-    return redirect("/recommender_register")
 
 
 @app.route("/login")
