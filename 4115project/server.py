@@ -1,6 +1,5 @@
 from ast import Sub
 import os
-from django.shortcuts import render
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, url_for, escape,request, render_template, g, redirect, Response
@@ -119,22 +118,20 @@ def company_search():
 @app.route("/company_decide", methods=["POST"])
 def company_decide():
     cid = request.form["cid"]
-    print(cid)
     industry = request.form["industry_ans"]
-    print(industry)
     job_type = request.form["job_type_ans"]
-    print(job_type)
-    cursor = g.conn.execute(f"SELECT appid FROM Application_submits AppS WHERE industry = \'{industry}\' AND job_type = \'{job_type}\' EXCEPT SELECT appid FROM reviews WHERE cid = \'{cid}\'")
-    appid_s = []
+    cursor = g.conn.execute(f"SELECT appid, aid FROM Application_submits AppS WHERE industry = \'{industry}\' AND job_type = \'{job_type}\' EXCEPT SELECT appid, aid FROM reviews WHERE cid = {cid}")
+    candidates = []
     for result in cursor:
-        appid_s.append(result)
+        candidates.append(result)
     cursor.close()
-    if len(appid_s) == 0:
+    if(len(candidates)==0):
         return render_template("company_industry_empty.html")
-    cur_appid = appid_s[0][0]
+    cur_appid = candidates[0][0]
+    cur_aid = candidates[0][1]        
     
     
-    cursor = g.conn.execute(f"WITH edu(appid, degree, college_name, graduation, gpa) AS (SELECT appid, degree_type, name, graduation, gpa FROM Applicant NATURAL JOIN Application_Submits NATURAL JOIN studied_at NATURAL JOIN Educational_Institution),rec (appid, relationship, rfirst, rlast, essay) AS (SELECT recommends.appid, recommends.recommendatee_relationship, Recommender.first_namet, Recommender.last_name, essay FROM recommends NATURAL JOIN Recommender),work (appid, position, tenure, job_description, company_name) AS (SELECT appid, position_title, tenure, job_description, company_name FROM worked_at NATURAL JOIN Company ORDER BY tenure DESC) SELECT * FROM Applicant NATURAL JOIN Application_submits NATURAL JOIN edu NATURAL JOIN rec NATURAL JOIN work WHERE appid = \'{cur_appid}\' LIMIT 1")
+    cursor = g.conn.execute(f"WITH edu(appid, degree, college_name, graduation, gpa) AS (SELECT appid, degree_type, name, graduation, gpa FROM Applicant NATURAL JOIN Application_Submits NATURAL JOIN studied_at NATURAL JOIN Educational_Institution),rec (appid, relationship, rfirst, rlast, essay) AS (SELECT recommends.appid, recommends.recommendatee_relationship, Recommender.first_namet, Recommender.last_name, essay FROM recommends NATURAL JOIN Recommender),work (appid, position, tenure, job_description, company_name) AS (SELECT appid, position_title, tenure, job_description, company_name FROM worked_at NATURAL JOIN Company ORDER BY tenure DESC) SELECT * FROM Applicant NATURAL JOIN Application_submits NATURAL JOIN edu NATURAL JOIN rec NATURAL JOIN work WHERE appid = {cur_appid} AND aid = {cur_aid} LIMIT 1")
     
     for record in cursor:
         return_record = record
@@ -144,17 +141,13 @@ def company_decide():
 @app.route("/decision_update", methods=["POST"])
 def decision_update():
     cid = request.form['cid']
-    print(cid)
     appid = request.form["appid"]
-    print(appid)
     aid = request.form["aid"]
-    print(aid)
     decision = request.form["decision"]
     if decision == "yes":
         interested = True
     else:
         interested = False
-    print(interested)
     
     cmd = f"INSERT INTO reviews VALUES ({cid},{aid}, {appid}, {interested})"
     g.conn.execute(text(cmd))
@@ -208,17 +201,11 @@ def applicant_submit():
 @app.route("/applicant_submit_add", methods=["POST"])
 def applicant_submit_add():
     aid = request.form["aid"]
-    print(aid)
     industry = request.form["industry"]
-    print(industry)
     job_type = request.form["job_type"]
-    print(job_type)
     compensation_type = request.form["compensation_type"]
-    print(compensation_type)
     desired_rate = request.form["desired_rate"]
-    print(desired_rate)
     Submission_date = request.form["posted_day"]
-    print(Submission_date)
     cmd = f"INSERT INTO Application_submits(aid,industry,job_type, compensation_type, desired_rate, Submission_date) VALUES (\'{aid}\',\'{industry}\', \'{job_type}\', \'{compensation_type}\', \'{desired_rate}\', \'{Submission_date}\')"
     
     g.conn.execute(
@@ -258,7 +245,7 @@ def applicant_submit_add():
             gpa = gpa
         )
 
-    return render_template("index.html")
+    return render_template("applicant_submit_confirmation.html", value1 = appid, value2= aid)
     
     
 @app.route("/education_register")
@@ -334,6 +321,45 @@ def recommender_search_add():
     g.conn.execute(text(cmd), rid = rid, aid = aid,appid = appid,  recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
     return redirect("/")
 
+@app.route("/job_submission")
+def job_submission():
+    cmd = "SELECT cid, company_name from Company"
+    cursor = g.conn.execute(
+        text(cmd)
+    )
+    jobs = []
+    for record in cursor:
+        jobs.append(record)
+    cursor.close()
+    context = dict(data=jobs)
+    
+    return render_template("job_submission.html", **context)
+
+@app.route("/work_history_add", methods=["POST"])
+def work_history_add():
+    cid = request.form["cid"]
+    appid = request.form["appid"]
+    aid = request.form["aid"]
+    position_title = request.form["position_title"]
+    tenure = request.form["tenure"]
+    job_description = request.form["job_description"]
+    
+    cmd = f"INSERT INTO worked_at(cid, aid,appid, position_title,tenure, job_description) VALUES ({cid},{aid},{appid}, \'{position_title}\',{tenure}, \'{job_description}\')"
+    
+    g.conn.execute(
+        text(cmd),
+        cid = cid,
+        aid=aid,
+        appid = appid,
+        position_title=position_title,
+        tenure = tenure,
+        job_description = job_description
+    )
+    
+    
+    return render_template("work_history_confirmation.html")
+    
+    
 
 
 @app.route("/login")

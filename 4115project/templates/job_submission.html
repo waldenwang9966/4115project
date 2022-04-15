@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form method="POST" action="/work_history_add">
+
+        <p><a href="/">Back to Home Page</a></p><br/><br/>
+        
+      <p>Search for your employer:</p>
+      <datalist id="company">
+        {% for n in data %}
+        <option>CID: {{n[0]}}; {{n[1]}}</option>
+        {% endfor %}
+      </datalist>
+      <input autocomplete="on" list="company" />
+        <p>Don't see your employer in the search bar? <a href="/company_register">Add the company here.</a></p>
+        <p>Input the Company ID (CID) of your employer below, as found in the search bar above.</p>
+        <input type= "text" name="cid" id="cid"></input> <br />
+
+      <label for="appid">appid</label>
+      <input type="number" name="appid" id="appid" /><br />
+
+      <label for="aid">aid</label>
+      <input type="number" name="aid" id="aid" /><br />
+
+      <label for="position_title">position_title</label>
+      <input type="text" name="position_title" id="position_title" /><br />
+
+
+      <label for="tenure">tenure</label>
+      <input type="number" name="tenure" id="tenure" /><br />
+
+      <label for="job_description">Job Description</label>
+      <input type="text" name="job_description" id="job_description" /><br />
+
+      <input type="submit" value="Submit"  /><br />
+    </form>
+  </body>
+</html>
