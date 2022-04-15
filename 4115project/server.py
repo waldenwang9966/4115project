@@ -190,6 +190,9 @@ def applicant_add():
         aid = r[0]
     
     return render_template("aid.html", value = aid)
+
+@app.route("/applicant_submit", methods=["POST"])
+def applicant_submit():
     
 
 @app.route("/education_add", methods=["POST"])

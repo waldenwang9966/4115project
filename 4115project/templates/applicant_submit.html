@@ -8,17 +8,25 @@
 </head>
 <body>
     <form method="POST" action="/applicant_add">
-        <label for="rid">Please enter the aid you saved when registering your account</label> 
+        <label for="aid">Please enter the aid you saved when registering your account</label> 
         <input type= "number" name="aid" id="aid"></input> <br />
   
-        <label for="aid">The recommendee's id (AID) you got from above: </label> 
-        <input type= "number" name="aid" id="aid"></input> <br />
   
         <label for="job_type">Job Type you are looking for </label> 
-        <input type= "number" name="appid" id="appid"></input> <br />
+        <select name="job_type" id="job_type">
+            <option value="Full-Time">Full-Time</option>
+            <option value="Part-Time">Part-Time</option>
+            <option value="Intern">Intern</option>
+          </select>
+
+          <label for="compensation_type">Compensation Type </label> 
+          <select name="compensation_type" id="compensation_type">
+              <option value="Hourly">Hourly</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Bi-weekly">Bi-weekly</option>
+              <option value="Monthly">Monthly</option>
+            </select>
   
-        <label for="relationship">Your relationship with the recommendee: </label>
-        <input type= "text" name="recommendatee_relationship" id="relationship"></input> <br />
   
         <label for="day">Current Date: </label>
         <input type= "date" name="posted_day" id="day"></input> <br />
