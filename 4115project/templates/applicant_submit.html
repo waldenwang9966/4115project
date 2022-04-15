@@ -7,9 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-    <form method="POST" action="/applicant_add">
+    <form method="POST" action="/applicant_submit">
         <label for="aid">Please enter the aid you saved when registering your account</label> 
         <input type= "number" name="aid" id="aid"></input> <br />
+
+        <label for="industry">Industry</label>
+        <input type= "text" name="industry" id="industry"></input> <br />
   
   
         <label for="job_type">Job Type you are looking for </label> 
@@ -26,14 +29,15 @@
               <option value="Bi-weekly">Bi-weekly</option>
               <option value="Monthly">Monthly</option>
             </select>
+          
+            <label for="desired_rate">Desired Rate</label>
+            <input type= "number" name="desired_rate" id="desired_rate"></input> <br />
   
   
         <label for="day">Current Date: </label>
         <input type= "date" name="posted_day" id="day"></input> <br />
   
   
-        <label for="essay">Please copy and paste your recommend text below. </label> <br/>
-        <textarea name="essay" id="essay" rows="20" cols="100"></textarea> <br />
         <input type="submit" value="Submit"  /><br />
       </form>
     

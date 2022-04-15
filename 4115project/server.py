@@ -1,3 +1,4 @@
+from ast import Sub
 import os
 from django.shortcuts import render
 from sqlalchemy import *
@@ -193,6 +194,28 @@ def applicant_add():
 
 @app.route("/applicant_submit", methods=["POST"])
 def applicant_submit():
+    aid = request.form["aid"]
+    industry = request.form["industry"]
+    job_type = request.form["job_type"]
+    compensation_type = request.form["compensation_type"]
+    desired_rate = request.form["desired_rate"]
+    Submission_date = request.form["Submission_date"]
+    
+    cmd = f"INSERT INTO Application_submits(aid,industry,job_type, compensation_type, desired_rate, Submission_date) VALUES (\'{aid}\',\'{industry}\', \'{job_type}\',, \'{compensation_type}\', \'{desired_rate}\', \'{Submission_date}\')"
+    
+    g.conn.execute(
+        text(cmd),
+        aid=aid,
+        industry=industry,
+        job_type = job_type,
+        compensation_type=compensation_type,
+        desired_rate=desired_rate,
+        Submission_date = Submission_date
+    )
+
+    return render_template("applicant_submit.html")
+    
+    
     
 
 @app.route("/education_add", methods=["POST"])
@@ -211,7 +234,7 @@ def education_add():
         state = state
     )
 
-    return render_template("application_submit.html")
+    return render_template("applicant_submit.html")
 
 # Recommender related pages
 
