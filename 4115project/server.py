@@ -192,16 +192,34 @@ def applicant_add():
     
     return render_template("aid.html", value = aid)
 
-@app.route("/applicant_submit", methods=["POST"])
+@app.route("/applicant_submit")
 def applicant_submit():
-    aid = request.form["aid"]
-    industry = request.form["industry"]
-    job_type = request.form["job_type"]
-    compensation_type = request.form["compensation_type"]
-    desired_rate = request.form["desired_rate"]
-    Submission_date = request.form["Submission_date"]
+    cmd2 = f"SELECT eid, name FROM Educational_Institution"
+    cursor = g.conn.execute(text(cmd2))
     
-    cmd = f"INSERT INTO Application_submits(aid,industry,job_type, compensation_type, desired_rate, Submission_date) VALUES (\'{aid}\',\'{industry}\', \'{job_type}\',, \'{compensation_type}\', \'{desired_rate}\', \'{Submission_date}\')"
+    records = []
+    for result in cursor:
+        records.append(result)
+    cursor.close()
+    context = dict(data=records)
+    
+    return render_template("applicant_submit.html", **context)
+
+@app.route("/applicant_submit_add", methods=["POST"])
+def applicant_submit_add():
+    aid = request.form["aid"]
+    print(aid)
+    industry = request.form["industry"]
+    print(industry)
+    job_type = request.form["job_type"]
+    print(job_type)
+    compensation_type = request.form["compensation_type"]
+    print(compensation_type)
+    desired_rate = request.form["desired_rate"]
+    print(desired_rate)
+    Submission_date = request.form["posted_day"]
+    print(Submission_date)
+    cmd = f"INSERT INTO Application_submits(aid,industry,job_type, compensation_type, desired_rate, Submission_date) VALUES (\'{aid}\',\'{industry}\', \'{job_type}\', \'{compensation_type}\', \'{desired_rate}\', \'{Submission_date}\')"
     
     g.conn.execute(
         text(cmd),
@@ -212,11 +230,40 @@ def applicant_submit():
         desired_rate=desired_rate,
         Submission_date = Submission_date
     )
+    
+    
+    cmd2 = f"SELECT MAX(appid) FROM Application_submits WHERE aid = {aid}"
+    
+    cursor = g.conn.execute(
+        text(cmd2)
+    )
+    for record in cursor:
+        appid = record[0]
+    
+    eid = request.form["eid"]
+    if (eid is not null) : 
+        aid = request.form["aid"]
+        degree_type = request.form["degree_type"]
+        graduation_day = request.form["graduation_day"]
+        gpa = request.form["GPA"]
+        cmd3 = f"INSERT INTO studied_at(aid,appid, eid, degree_type, graduation, gpa) VALUES (\'{aid}\',\'{appid}\', \'{eid}\', \'{degree_type}\', \'{graduation_day}\', {gpa})"
+        
+        g.conn.execute(
+            text(cmd3),
+            aid=aid,
+            appid=appid,
+            eid = eid,
+            degree_type=degree_type,
+            graduation_day=graduation_day,
+            gpa = gpa
+        )
 
-    return render_template("applicant_submit.html")
+    return render_template("index.html")
     
     
-    
+@app.route("/education_register")
+def education_register():
+    return render_template("education_register.html")
 
 @app.route("/education_add", methods=["POST"])
 def education_add():
@@ -234,7 +281,7 @@ def education_add():
         state = state
     )
 
-    return render_template("applicant_submit.html")
+    return redirect("/applicant_submit")
 
 # Recommender related pages
 
@@ -263,26 +310,6 @@ def recommender_add():
     
     return render_template("rid.html", value = rid)
 
-@app.route("/applicant_submit")
-def applicant_submit():
-    cursor = g.conn.execute("SELECT distinct industry from Application_submits")
-    
-    industries = []
-    for result in cursor:
-        industries.append(result)
-    cursor.close()
-    
-    cursor = g.conn.execute("SELECT distinct job_type from Application_submits")
-    
-    job_types = []
-    for result in cursor:
-        job_types.append(result)
-    cursor.close()
-    
-    context1 = dict(data1=industries)
-    context2 = dict(data2=job_types)
-    
-    return render_template("company_industry.html", **context1, **context2)
     
 
 @app.route("/recommender_search")

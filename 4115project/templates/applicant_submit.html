@@ -7,14 +7,17 @@
     <title>Document</title>
 </head>
 <body>
-    <form method="POST" action="/applicant_submit">
-        <label for="aid">Please enter the aid you saved when registering your account</label> 
+    <form method="POST" action="/applicant_submit_add">
+
+        <label for="aid">Please enter the Applicant ID (AID) you saved when registering your account:</label> 
         <input type= "number" name="aid" id="aid"></input> <br />
+
+
+        <h1>Tell us about the job you are looking for...</h1>
 
         <label for="industry">Industry</label>
         <input type= "text" name="industry" id="industry"></input> <br />
-  
-  
+
         <label for="job_type">Job Type you are looking for </label> 
         <select name="job_type" id="job_type">
             <option value="Full-Time">Full-Time</option>
@@ -32,10 +35,33 @@
           
             <label for="desired_rate">Desired Rate</label>
             <input type= "number" name="desired_rate" id="desired_rate"></input> <br />
+
+
+            <h1>Tell us about your highest level of education...</h1>
+
+        <label for="education">Education Institution</label>
+        <p>Search for your institution: </p><datalist id="education">
+          {% for n in data %}
+          <option>EID: {{n[0]}}; {{n[1]}}</option>
+          {% endfor %}
+        </datalist>
+        <input autocomplete="on" list="education" />
+        <p>Don't see your school in the search bar? <a href="/education_register">Add it here.</a></p>
+        <p>Input the Education ID (EID) of your school below, as found in the search bar above.</p>
+        <input type= "text" name="eid" id="eid"></input> <br />
+
+        <p>What type of degree did you earn? (i.e. Bachelor's of Arts)</p>
+        <input type= "text" name="degree_type" id="degree_type"></input> <br />
+
+        <p>When did you graduate with your degree?</p>
+        <input type= "date" name="graduation_day" id="graduation_day"></input> <br />
+
+        <p>And what was your GPA?</p>
+        <input type= "number" step="any" name="GPA" id="GPA"></input> <br />
   
   
-        <label for="day">Current Date: </label>
-        <input type= "date" name="posted_day" id="day"></input> <br />
+        <label for="posted_day">Current Date: </label>
+        <input type= "date" name="posted_day" id="posted_day"></input> <br />
   
   
         <input type="submit" value="Submit"  /><br />
