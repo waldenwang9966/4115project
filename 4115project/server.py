@@ -192,6 +192,24 @@ def applicant_add():
     return render_template("aid.html", value = aid)
     
 
+@app.route("/education_add", methods=["POST"])
+def education_add():
+    name = request.form["name"]
+    city = request.form["city"]
+    state = request.form["state"]
+
+    cmd = f"INSERT INTO Educational_Institution(name,city,state) VALUES (\'{name}\',\'{city}\', \'{state}\')"
+    
+    
+    g.conn.execute(
+        text(cmd),
+        name=name,
+        city=city,
+        state = state
+    )
+
+    return render_template("application_submit.html")
+
 # Recommender related pages
 
 @app.route("/recommender_register")
