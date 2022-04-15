@@ -192,6 +192,10 @@ def applicant_add():
     return render_template("aid.html", value = aid)
     
 
+@app.route("/education_register")
+def applicant():
+    return render_template("education_register.html")
+
 @app.route("/education_add", methods=["POST"])
 def education_add():
     name = request.form["name"]
