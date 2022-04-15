@@ -193,7 +193,7 @@ def applicant_add():
     
 
 @app.route("/education_register")
-def applicant():
+def education_register():
     return render_template("education_register.html")
 
 @app.route("/education_add", methods=["POST"])
@@ -212,7 +212,7 @@ def education_add():
         state = state
     )
 
-    return render_template("application_submit.html")
+    return redirect("/application_submit")
 
 # Recommender related pages
 
