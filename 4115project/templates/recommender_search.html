@@ -14,20 +14,28 @@
       Please search for the application you are recommending:
         <datalist id="suggestions">
             {% for n in data %}
-                <option>{{n}}</option>
+                <option>aid: {{n[0]}} appid: {{n[1]}} name:{{n[2]}} {{n[3]}} 
+                  {{n[4]}} {{n[5]}} {{n[6]}} {{n[7]}}
+                </option>
             {% endfor %}
         </datalist>
         <input  autoComplete="on" list="suggestions"/> 
     </div>
 
     <form method="POST" action="/recommender_search_add">
-      <label for="aid">The recommendee's id you got from above: </label> 
+      <label for="rid">Please enter the rid you saved when registering your account</label> 
+      <input type= "number" name="rid" id="rid"></input> <br />
+
+      <label for="aid">The recommendee's id (AID) you got from above: </label> 
       <input type= "number" name="aid" id="aid"></input> <br />
+
+      <label for="appid">The application id (APPID) you got from above: </label> 
+      <input type= "number" name="appid" id="appid"></input> <br />
 
       <label for="relationship">Your relationship with the recommendee: </label>
       <input type= "text" name="recommendatee_relationship" id="relationship"></input> <br />
 
-      <label for="day">Date of Submission: </label>
+      <label for="day">Current Date: </label>
       <input type= "date" name="posted_day" id="day"></input> <br />
 
 

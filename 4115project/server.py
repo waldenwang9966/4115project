@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, session, url_for, escape,request, render_template, g, redirect, Response
+from flask import Flask url_for, escape,request, render_template, g, redirect, Response
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -75,39 +75,30 @@ def company_add():
 
 @app.route("/company_search")
 def company_search():
-    if "company" in session:
-        cursor = g.conn.execute("SELECT aid, appid, date_of_birth, name as college, gpa, compensation_type, desired_rate, submission_date, essay, recommendatee_relationship FROM Applicant NATURAL JOIN Application_submits NATURAl JOIN recommends NATURAL JOIN Educational_Institution NATURAL JOIN studied_at;")
-        applicants = []
-        for result in cursor:
-            applicants.append(result)
-        cursor.close()
-        context1 = dict(data1=applicants)
-        
-        cursor = g.conn.execute("SELECT * FROM Company")
-        companies = []
-        for result in cursor:
-            companies.append(result)
-        cursor.close()
-        context2 = dict(data2=companies)
-        
-        return render_template("company_search.html", **context1, **context2)
-    else:
-        return render_template("company_not_login.html")
+    cursor = g.conn.execute("SELECT aid, appid, date_of_birth, name as college, gpa, compensation_type, desired_rate, submission_date, essay, recommendatee_relationship FROM Applicant NATURAL JOIN Application_submits NATURAl JOIN recommends NATURAL JOIN Educational_Institution NATURAL JOIN studied_at;")
+    
+    applicants = []
+    for result in cursor:
+        applicants.append(result)
+    cursor.close()
+    context1 = dict(data1=applicants)
+    
+    cursor = g.conn.execute("SELECT * FROM Company")
+    companies = []
+    for result in cursor:
+        companies.append(result)
+    cursor.close()
+    context2 = dict(data2=companies)
+    
+    return render_template("company_search.html", **context1, **context2)
+    
 # TO DO
 @app.route("/company_search_add", methods=["POST"])
 def company_search_add():
-    if "company" in session:
-        
-        cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
-        g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
-        return redirect("/company_search_add")
-    else:
-        return redirect("/")
+    cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
+    g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
+    return redirect("/company_search_add")
 
-@app.route("/company_logoff")
-def company_logout():
-    session.pop("company", None)
-    return redirect("/company_register")
 
 
 @app.route("/applicant_register")
@@ -145,7 +136,7 @@ def recommender_add():
 
 @app.route("/recommender_search")
 def recommender_search():
-    cursor = g.conn.execute("SELECT * FROM Applicant App INNER JOIN Application_submits AppS ON App.aid = AppS.aid")
+    cursor = g.conn.execute("SELECT App.aid, appid, first_name, last_name, industry,job_type, email, phone_number FROM Applicant App INNER JOIN Application_submits AppS ON App.aid = AppS.aid")
     records = []
     for result in cursor:
         records.append(result)
@@ -155,12 +146,14 @@ def recommender_search():
 
 @app.route("/recommender_search_add", methods=["POST"])
 def recommender_search_add():
+    rid = request.form["rid"]
     aid = request.form["aid"]
+    appid = request.form["appid"]
     recommendatee_relationship = request.form["recommendatee_relationship"]
     posted_day = request.form["posted_day"]
     essay = request.form["essay"]
-    cmd = "INSERT INTO Recommends(aid, rid, recommendatee_relationship,posted_day,essay) VALUES (:aid, :rid, :recommendatee_relationship, :posted_day, :essay)"
-    g.conn.execute(text(cmd), rid = rid, aid = aid, recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
+    cmd = "INSERT INTO Recommends(aid, appid, rid, essay, posted_day,recommendatee_relationship) VALUES (:aid, :appid, :rid, :essay, :posted_day,:recommendatee_relationship)"
+    g.conn.execute(text(cmd), rid = rid, aid = aid,appid = appid,  recommendatee_relationship = recommendatee_relationship, posted_day = posted_day, essay = essay);
     return redirect("/")
 
 
